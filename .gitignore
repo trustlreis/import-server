@@ -1,0 +1,40 @@
+# Java and Maven
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Lombok generated files
+delombok/
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+.tmp/
+
+# VS Code
+.vscode/
+
+# Other
+*.swp
+*~
+

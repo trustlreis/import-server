@@ -1,0 +1,34 @@
+@startuml
+
+package "domain" {
+    interface ProcessingStrategy {
+        +void process(Stream<String[]> validRows, Stream<String[]> invalidRows, String fileName, String jobName)
+    }
+
+    abstract class AbstractProcessingStrategy implements ProcessingStrategy {
+        -FileManager fileManager
+        +AbstractProcessingStrategy(FileManager fileManager)
+        +void logProcessingResult(String message)
+    }
+
+    class WholeFileProcessingStrategy extends AbstractProcessingStrategy {
+        +WholeFileProcessingStrategy(FileManager fileManager)
+        +void process(Stream<String[]> validRows, Stream<String[]> invalidRows, String fileName, String jobName)
+    }
+
+    class PartialFileProcessingStrategy extends AbstractProcessingStrategy {
+        +PartialFileProcessingStrategy(FileManager fileManager)
+        +void process(Stream<String[]> validRows, Stream<String[]> invalidRows, String fileName, String jobName)
+    }
+}
+
+package "disk" {
+    class FileManager {
+        +void saveValidRows(List<String[]> rows, String fileName, String jobName)
+        +void saveInvalidRows(List<String[]> rows, String fileName, String jobName)
+        +void saveInvalidFile(String fileName, String jobName, Exception e)
+    }
+}
+
+AbstractProcessingStrategy -----[norank]> FileManager : uses
+@enduml

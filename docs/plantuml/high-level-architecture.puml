@@ -1,0 +1,57 @@
+@startuml
+package "External Systems" {
+    [S3 Bucket] 
+    [SFTP Server]
+}
+
+package "com.trustly.labs.importserver.application" {
+    [S3PollingRoute] 
+    [SftpPollingRoute]
+    [CsvProcessingRoute]
+}
+
+package "com.trustly.labs.importserver.domain" {
+    [CsvFileProcessor]
+    [CsvParserService]
+    [ProcessingStrategy]
+    [WholeFileProcessingStrategy]
+    [PartialFileProcessingStrategy]
+}
+
+package "com.trustly.labs.importserver.infrastructure.config" {
+    [SourceConfigLoader]
+    [CsvConfig]
+    [LayoutConfigLoader]
+}
+
+package "com.trustly.labs.importserver.infrastructure.disk" {
+    [FileManager]
+}
+
+package "Output Directory" {
+    [Processed Files]
+}
+
+[S3PollingRoute] --> [S3 Bucket] : Poll files
+[S3 Bucket] --> [S3PollingRoute] : Send file streams
+[S3PollingRoute] --> [CsvProcessingRoute] : Direct file streams
+[S3PollingRoute] --> [SourceConfigLoader] : Uses
+
+[SftpPollingRoute] --> [SFTP Server] : Poll files
+[SFTP Server] --> [SftpPollingRoute] : Send file streams
+[SftpPollingRoute] --> [CsvProcessingRoute] : Direct file streams
+[SftpPollingRoute] --> [SourceConfigLoader] : Uses
+
+[CsvProcessingRoute] --> [CsvFileProcessor] : Process files
+[CsvFileProcessor] --> [CsvParserService] : Parse files
+[CsvParserService] --> [CsvConfig] : Uses
+[CsvParserService] --> [LayoutConfigLoader] : Uses
+[CsvFileProcessor] .> [ProcessingStrategy] : Uses
+[CsvFileProcessor] --> [WholeFileProcessingStrategy] : Uses
+[CsvFileProcessor] --> [PartialFileProcessingStrategy] : Uses
+[WholeFileProcessingStrategy] ..|> [ProcessingStrategy] : Implements
+[PartialFileProcessingStrategy] ..|> [ProcessingStrategy] : Implements
+[CsvParserService] --[norank]> [FileManager] : Save processed files
+[FileManager] --> [Processed Files] : Store output
+
+@enduml
